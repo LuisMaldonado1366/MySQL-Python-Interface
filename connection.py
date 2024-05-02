@@ -11,6 +11,7 @@ Version: 1.1.2
 Dependencies: pandas, mysql.connector.
 """
 
+
 ################################## Libraries ##################################
 # Third party.
 import pandas as pd
@@ -23,20 +24,24 @@ class Connection:
     A class for connection and managment of a mysql database.
 
     Attributes:
-        _host (str): 
-        _user (str):
-        _password (str): 
+        __host (str): Host name for the database.
+        __user (str): User name of the database.
+        __password (str): Password for the user.
+        __connection (mysql.connector): Object for the mysql connection.
+        __databse (str): Database name.
+        __cursor (mysql.cursor): Object to execute queries on mysql connection.
+        __fields (array): Fields to operate into the sql query.
     """
 
     def __init__(self, host, user, password):
         """
         Resume: Class constructor.
-        Description: Creates an object of the class associating the API Rest
-            Credentials and endpoint accordingly to the declared mode.
+        Description: Creates an object of the class associating the database
+            credentials.
         Args:
-            api_key (str): 
-            api_secret (str): 
-            mode (str): 
+            host (str): Host name for the database connection.
+            user (str): User name of the database.
+            password (str): Password for the user name.
            
         Returns:
             None
@@ -45,23 +50,20 @@ class Connection:
         self.__user = user
         self.__password = password
         self.__connection = None
-        self.__database = None
+        self.__database = ''
         self.__cursor = None
         self.__fields = []
 
 
     def __connect(self, database):
         """
-        Resume: Class constructor.
-        Description: Creates an object of the class associating the API Rest
-            Credentials and endpoint accordingly to the declared mode.
+        Resume: Establishes the connection to the database.
+        Description: Creates an object connector to interact with the database.
         Args:
-            api_key (str): 
-            api_secret (str): 
-            mode (str): 
+            database (str): Name of the database.
             
         Returns:
-            None
+            mysql.connector: The created connection associated with the database.
         """
         try:
             self.__database = database
@@ -81,13 +83,10 @@ class Connection:
 
     def __create_cursor(self, database):
         """
-        Resume: Class constructor.
-        Description: Creates an object of the class associating the API Rest
-            Credentials and endpoint accordingly to the declared mode.
+        Resume: Creates a cursor object to execute the queries.
+        Description: Creates a cursor object to manipulate the sql queries.
         Args:
-            api_key (str): 
-            api_secret (str): 
-            mode (str): 
+            database (str): Database name.
             
         Returns:
             None
@@ -101,16 +100,19 @@ class Connection:
 
     def fetch_data(self, database, table, **kwargs):
         """
-        Resume: Class constructor.
-        Description: Creates an object of the class associating the API Rest
-            Credentials and endpoint accordingly to the declared mode.
+        Resume: Retrieves the specified data table from the given database.
+        Description: Retrieves the specified data from a selected table within
+            the database, if the query fields are specified within the keyword
+            arguments, it brings just those by putting it in the select statement,
+            otherwise it brings all the available fields in the table.
         Args:
-            api_key (str): 
-            api_secret (str): 
-            mode (str): 
+            database (str): Database name to connecto to.
+            table (str): Table name to fetch the data from.
+            **kwargs: Additional keyword arguments:
+                - fields (list): A list of column names to retrieve from the table.
             
         Returns:
-            None
+            pandas.DataFrame: The retrieved data formated as a pandas dataframe.
         """
         self.__database = database
         _table = table
@@ -142,16 +144,17 @@ class Connection:
 
     def insert_data(self, database, table, data_df):
         """
-        Resume: Class constructor.
-        Description: Creates an object of the class associating the API Rest
-            Credentials and endpoint accordingly to the declared mode.
+        Resume: Inserts the given data to the specified table from the given database.
+        Description: Writes the given data to a table in the database. If the key value
+            is not present within the table, the data is inserted, otherwise, the data
+            is updated in the duplicated register.
         Args:
-            api_key (str): 
-            api_secret (str): 
-            mode (str): 
+            database (str): Database name to connecto to.
+            table (str): Table name to fetch the data from.
+            data_df (pandas.DataFrame): Data to be inserted/updated within the table.
             
         Returns:
-            None
+            bool: True if the insertion was succesful, False otherwise.
         """
         try:
             self.__database = database
@@ -206,16 +209,20 @@ class Connection:
 
     def delete_data(self, database, table, data_df, field_to_operate):
         """
-        Resume: Class constructor.
-        Description: Creates an object of the class associating the API Rest
-            Credentials and endpoint accordingly to the declared mode.
+        Resume: Deletes the given data from the specified table database using
+            as key the passed field.
+        Description: Deletes all the data matching the dataframe given on the 
+            specified field.
         Args:
-            api_key (str): 
-            api_secret (str): 
-            mode (str): 
+            database (str): Database name to connecto to.
+            table (str): Table name to fetch the data from.
+            data_df (pandas.DataFrame): Data to be used for the deletion within
+                the table.
+            field_to_operate (str): Field to use in the query.
             
         Returns:
-            None
+            bool: True if the table database number of rows matches the given 
+                dataframe, False otherwise.
         """
         _database = database
         _table = table
