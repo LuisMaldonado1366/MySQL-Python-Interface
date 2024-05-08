@@ -3,11 +3,11 @@
 # connection.py
 
 """
-Description: 
+Description: Custom python module to interact with mysql databases.
 Author: Luis Maldonado
 Created on: Thu Aug 31 14:24:05 2023
 Modified on: Thu May 02 16:06:51 2024
-Version: 1.1.2
+Version: 1.2.2
 Dependencies: pandas, mysql.connector.
 """
 
@@ -33,7 +33,7 @@ class Connection:
         __fields (array): Fields to operate into the sql query.
     """
 
-    def __init__(self, host, user, password):
+    def __init__(self, host: str, user: str, password: str) -> None:
         """
         Resume: Class constructor.
         Description: Creates an object of the class associating the database
@@ -55,7 +55,7 @@ class Connection:
         self.__fields = []
 
 
-    def __connect(self, database):
+    def __connect(self, database: str) -> object:
         """
         Resume: Establishes the connection to the database.
         Description: Creates an object connector to interact with the database.
@@ -81,7 +81,7 @@ class Connection:
         return self.__connection
 
 
-    def __create_cursor(self, database):
+    def __create_cursor(self, database: str) -> object:
         """
         Resume: Creates a cursor object to execute the queries.
         Description: Creates a cursor object to manipulate the sql queries.
@@ -98,7 +98,7 @@ class Connection:
         return self.__cursor
 
 
-    def fetch_data(self, database, table, **kwargs):
+    def fetch_data(self, database: str, table: str, **kwargs: list) -> pd.DataFrame:
         """
         Resume: Retrieves the specified data table from the given database.
         Description: Retrieves the specified data from a selected table within
@@ -129,6 +129,9 @@ class Connection:
             _str_query += '*'
 
         _str_query += ' FROM ' + _table
+        
+        if 'filter_query' in kwargs:
+            _str_query += f" {kwargs['filter_query']}"
 
         self.__cursor.execute(_str_query)
 
@@ -142,7 +145,7 @@ class Connection:
         return _result_df
 
 
-    def insert_data(self, database, table, data_df):
+    def insert_data(self, database: str, table: str, data_df: pd.DataFrame) -> bool:
         """
         Resume: Inserts the given data to the specified table from the given database.
         Description: Writes the given data to a table in the database. If the key value
@@ -207,7 +210,7 @@ class Connection:
         return _result
 
 
-    def delete_data(self, database, table, data_df, field_to_operate):
+    def delete_data(self, database: str, table: str, data_df: pd.DataFrame, field_to_operate: str):
         """
         Resume: Deletes the given data from the specified table database using
             as key the passed field.
