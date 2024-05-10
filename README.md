@@ -8,8 +8,8 @@ Custom python module to interact with mysql databases.
 
 - **Author:** Luis Maldonado
 - **Created on:** Thu Aug 31 14:24:05 2023
-- **Modified on:** Thu May 02 16:06:51 2024
-- **Version:** 1.2.2
+- **Modified on:** Tue May  09 11:16:01 2024
+- **Version:** 1.2.3
 
 ## Features
 

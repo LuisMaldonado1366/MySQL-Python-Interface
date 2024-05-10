@@ -7,7 +7,7 @@ Description: Script used to query all clients data from a database and clean the
     invoice service 'factura.com' using the UID.
 Author: Luis Maldonado.
 Created on: Mon May  06 11:25:54 2024
-Modified on: Tue May  07 17:19:25 2024
+Modified on: Tue May  09 11:16:01 2024
 Version: 1.0.0
 Dependencies: json, sys, time, datetime, decouple, connection.
 """
@@ -30,13 +30,9 @@ from connection import Connection
 ################################## Enviroment variables ##################################
 env_config = Config(repository = RepositoryEnv(source = '.env'))
 DATABASE_HOST = env_config.get('DATABASE_HOST')
+DATABASE_PORT = env_config.get('DATABASE_PORT')
 DATABASE_USER = env_config.get('DATABASE_USER')
 DATABASE_PASSWORD = env_config.get('DATABASE_PASSWORD')
-DATABASE_NAME = env_config.get('DATABASE_NAME')
-BROKER_HOST = env_config.get('BROKER_HOST')
-BROKER_PORT = env_config.get('BROKER_PORT')
-TOPIC_SUBSCRIBE = env_config.get('TOPIC_SUBSCRIBE')
-TOPIC_PUBLISH = env_config.get('TOPIC_PUBLISH')
 
 
 ################################## Constants ##################################
@@ -45,6 +41,7 @@ MAX_RETRIES = 3
 
 ################################## Instances ##################################
 connection = Connection(host = DATABASE_HOST,
+                        port = DATABASE_PORT,
                         user = DATABASE_USER,
                         password = DATABASE_PASSWORD)
 
@@ -66,37 +63,6 @@ def log_out(*, message: str, identifier: str) -> None:
     dt_log = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     print (f'\n{dt_log} - [{identifier}] {message}')
 
-    
-def retrieve_data(*, db_host: str = 'local_host', db_user: str = 'root',
-                  db_password: str = '', database: str, table: str, **kwargs) -> object:
-    """
-    Resume: Retrieve data from the specified database and table.
-    Description: This function uses the db credentials and 
-                    retrieves the fields of the indicated table.
-    Args:
-        database (str): Name of the database.
-        table (str): Name of the table to query.
-        **kwargs: Additional keyword arguments:
-            - query_fields (list): List of fields to retrieve.
-            - database_credentials (dict): Database connection credentials.
-
-    Returns:
-        pandas.DataFrame: DataFrame containing the retrieved data.
-    """
-    connection_retrieve = Connection(host = db_host,
-                                     user = db_user,
-                                     password = db_password)
-
-    if 'query_fields' in kwargs:
-        results_fields = kwargs['query_fields']
-        results_db = connection_retrieve.fetch_data(database = database,
-                                                    table = table,
-                                                    fields = results_fields)
-    else:
-        results_db = connection_retrieve.fetch_data(database = database,
-                                                    table = table)
-    return  results_db
-
 
 def main():
     """
@@ -111,19 +77,19 @@ def main():
     """
     user = 'Aracely'
     sku = 'AR0001'
-    query_complement = f'''WHERE last_modified_by LIKE "%{user}%" and sku = "{sku}"'''
+    query_complement = f'''WHERE last_modified_by LIKE "%{user}%" or sku = "{sku}"'''
 
     result = connection.fetch_data(database = 'pvunitelectronics',
                                    table = 'webhookproductos',
                                    fields = ['id', 'sku', 'last_modified_by'],
                                    filter_query = query_complement)
     print(result)
-    result_copy = result.copy()
-    result_copy['_fixed_price_rules'] = "Sin escalas"
-    print(result_copy)
+    # result_copy = result.copy()
+    # result_copy['_fixed_price_rules'] = "Sin escalas"
+    # print(result_copy)
 
-    insert_result = connection.insert_data(database = 'pvunitelectronics', table='webhookproductos', data_df = result_copy)
-    print(insert_result)
+    # insert_result = connection.insert_data(database = 'pvunitelectronics', table='webhookproductos', data_df = result_copy)
+    # print(insert_result)
     
 
 ##################################### Main ####################################

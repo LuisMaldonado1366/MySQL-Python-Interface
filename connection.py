@@ -6,8 +6,8 @@
 Description: Custom python module to interact with mysql databases.
 Author: Luis Maldonado
 Created on: Thu Aug 31 14:24:05 2023
-Modified on: Thu May 02 16:06:51 2024
-Version: 1.2.2
+Modified on: Tue May  09 11:16:01 2024
+Version: 1.2.3
 Dependencies: pandas, mysql.connector.
 """
 
@@ -33,7 +33,7 @@ class Connection:
         __fields (array): Fields to operate into the sql query.
     """
 
-    def __init__(self, host: str, user: str, password: str) -> None:
+    def __init__(self, host: str, port: int, user: str, password: str) -> None:
         """
         Resume: Class constructor.
         Description: Creates an object of the class associating the database
@@ -53,6 +53,7 @@ class Connection:
         self.__database = ''
         self.__cursor = None
         self.__fields = []
+        self.__port = port
 
 
     def __connect(self, database: str) -> object:
@@ -69,7 +70,7 @@ class Connection:
             self.__database = database
             self.__connection = connect(
                 host = self.__host,
-                #port = 3306,
+                port = self.__port,
                 user = self.__user,
                 password = self.__password,
                 db = self.__database
