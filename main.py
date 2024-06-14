@@ -43,7 +43,8 @@ MAX_RETRIES = 3
 connection = Connection(host = DATABASE_HOST,
                         port = DATABASE_PORT,
                         user = DATABASE_USER,
-                        password = DATABASE_PASSWORD)
+                        password = DATABASE_PASSWORD,
+                        database='pvunitelectronics')
 
 
 ################################## Functions ##################################
@@ -75,21 +76,31 @@ def main():
     Returns:
         None
     """
-    user = 'Aracely'
-    sku = 'AR0001'
-    query_complement = f'''WHERE last_modified_by LIKE "%{user}%" or sku = "{sku}"'''
+    query_complement = 'WHERE sku = ""'
 
-    result = connection.fetch_data(database = 'pvunitelectronics',
-                                   table = 'webhookproductos',
-                                   fields = ['id', 'sku', 'last_modified_by'],
-                                   filter_query = query_complement)
+    result = connection.fetch_data(table = 'webhookproductos',
+                                    fields = ['id', 'sku', 'last_modified_by'],
+                                    filter_query = query_complement)
     print(result)
-    # result_copy = result.copy()
-    # result_copy['_fixed_price_rules'] = "Sin escalas"
-    # print(result_copy)
+    result_copy = result.copy()
+    result_copy['_fixed_price_rules'] = "Sin escalas"
+    print(result_copy)
 
-    # insert_result = connection.insert_data(database = 'pvunitelectronics', table='webhookproductos', data_df = result_copy)
-    # print(insert_result)
+    insert_result = connection.insert_data(table='webhookproductos', data_df = result_copy)
+    print(insert_result)
+    
+    delete_copy = result_copy.copy()
+    delete_data = connection.delete_data(table='webhookproductos', data_df = delete_copy, field_to_operate = 'sku')
+    print(delete_data)    
+    
+    exec_query = connection.execute_special_query(query='SELECT id, sku FROM webhookproductos WHERE last_modified_by LIKE "%Claudia%"')
+    print(exec_query)
+    
+    exec_query = connection.execute_special_query(query='DELETE FROM webhookproductos WHERE sku = "OFERTA-315"')
+    print(exec_query)
+    
+    truncate = connection.truncate_table(table='webhookproductos')
+    print(truncate)
     
 
 ##################################### Main ####################################
