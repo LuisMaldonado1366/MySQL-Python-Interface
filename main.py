@@ -3,12 +3,11 @@
 # main.py
 
 """
-Description: Script used to query all clients data from a database and clean the
-    invoice service 'factura.com' using the UID.
+Description: Script example for mysql.connector custom module.
 Author: Luis Maldonado.
 Created on: Mon May  06 11:25:54 2024
 Modified on: Tue May  09 11:16:01 2024
-Version: 1.0.0
+Version: 1.1.0
 Dependencies: json, sys, time, datetime, decouple, connection.
 """
 
@@ -33,6 +32,7 @@ DATABASE_HOST = env_config.get('DATABASE_HOST')
 DATABASE_PORT = env_config.get('DATABASE_PORT')
 DATABASE_USER = env_config.get('DATABASE_USER')
 DATABASE_PASSWORD = env_config.get('DATABASE_PASSWORD')
+DATABASE_NAME = env_config.get('DATABASE_NAME')
 
 
 ################################## Constants ##################################
@@ -44,7 +44,7 @@ connection = Connection(host = DATABASE_HOST,
                         port = DATABASE_PORT,
                         user = DATABASE_USER,
                         password = DATABASE_PASSWORD,
-                        database='pvunitelectronics')
+                        database = DATABASE_NAME)
 
 
 ################################## Functions ##################################
@@ -76,8 +76,7 @@ def main():
     Returns:
         None
     """
-    query_complement = 'WHERE sku = ""'
-
+    query_complement = 'WHERE sku = "AR0001"'
     result = connection.fetch_data(table = 'webhookproductos',
                                     fields = ['id', 'sku', 'last_modified_by'],
                                     filter_query = query_complement)

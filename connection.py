@@ -7,7 +7,7 @@ Description: Custom python module to interact with mysql databases.
 Author: Luis Maldonado
 Created on: Thu Aug 31 14:24:05 2023
 Modified on: Thu June  13 12:53:36 2024
-Version: 1.3.0
+Version: 2.0.0
 Dependencies: pandas, mysql.connector.
 """
 
@@ -16,6 +16,7 @@ Dependencies: pandas, mysql.connector.
 # Third party.
 import pandas as pd
 from mysql.connector import Error, connect
+
 
 ################################### Classes ###################################
 class Connection:
@@ -58,6 +59,16 @@ class Connection:
 
 
     def set_credentials(self, user: str, password: str) -> None:
+        """
+        Resume: Set the connection credentials.
+        Description: Update the connection credentials if needed (not recommended).
+        Args:
+            user (str): User name of the database.
+            password (str): Password for the user name.
+           
+        Returns:
+            None
+        """
         self.__user = user
         self.__password = password
 
@@ -67,13 +78,12 @@ class Connection:
         Resume: Establishes the connection to the database.
         Description: Creates an object connector to interact with the database.
         Args:
-            database (str): Name of the database.
+            None
             
         Returns:
             mysql.connector: The created connection associated with the database.
         """
         try:
-            # self.__database = database
             self.__connection = connect(
                 host = self.__host,
                 port = self.__port,
@@ -283,7 +293,7 @@ class Connection:
         return _row_count_final
 
 
-    def execute_special_query(self, query: str) -> any:
+    def execute_custom_query(self, query: str) -> any:
         """
         Resume: Excutes a custom SQL query.
         Description: Excutes the given SQL query in the database.
